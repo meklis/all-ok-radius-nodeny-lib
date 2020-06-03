@@ -9,7 +9,29 @@ use Meklis\RadiusToNodeny\Radius\RadReply\Request as RadReq;
 
 class Request
 {
+    /**
+     * @var RadReq
+     */
     protected $request;
+
+    /**
+     * @return RadReq
+     */
+    public function getRequest(): RadReq
+    {
+        return $this->request;
+    }
+
+    /**
+     * @return Response
+     */
+    public function getResponse(): Response
+    {
+        return $this->response;
+    }
+    /**
+     * @var Response
+     */
     protected $response;
     protected function __construct(RadReq $req, Response $response)
     {
@@ -31,5 +53,6 @@ class Request
             }
         }
         $resp = Response::create($ra['ip_address'], $ra['pool_name'], $ra['lease_time_sec'], $ra['status'], $ra['error']);
+        return new self($req, $resp);
     }
 }

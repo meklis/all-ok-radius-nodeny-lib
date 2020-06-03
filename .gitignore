@@ -1,2 +1,5 @@
 .idea
 vendor
+.env
+var
+composer.lock

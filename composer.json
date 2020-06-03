@@ -1,6 +1,7 @@
 {
     "name": "meklis/all-ok-radius-nodeny",
     "license": "MIT",
+    "type": "project",
     "authors": [
         {
             "name": "Max Boyar",
@@ -8,8 +9,16 @@
         }
     ],
     "require": {
+        "ext-pdo": "*",
+        "php": ">=7.1",
         "ext-json": "*",
-        "ext-pdo": "*"
+        "lkdevelopment/hetzner-cloud-php-sdk": "^2.1",
+        "monolog/monolog": "^1.24",
+        "php-di/php-di": "^6.0",
+        "robmorgan/phinx": "^0.12.1",
+        "slim/psr7": "^0.5",
+        "slim/slim": "^4.1",
+        "vlucas/phpdotenv": "^4.1"
     },
     "autoload": {
         "psr-4": {

@@ -36,13 +36,13 @@ class Response
             if($this->poolName) {
                 $resp['pool_name'] = $this->poolName;
             }
-            if($this->poolName) {
+            if($this->ipAddress) {
                 $resp['ip_address'] = $this->ipAddress;
             }
             if($this->leaseTimeSec) {
                 $resp['lease_time_sec'] = $this->leaseTimeSec;
             }
-            if($this->leaseTimeSec) {
+            if($this->error) {
                 $resp['error'] = $this->error;
             }
             if($this->status) {
