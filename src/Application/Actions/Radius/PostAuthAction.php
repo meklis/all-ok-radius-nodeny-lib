@@ -15,7 +15,6 @@ class PostAuthAction extends RadiusAction
     {
         $this->logger->debug("Request: " , $this->getFormData());
         $respond = $this->radius->radPostAuth(Request::init($this->getFormData()));
-        $this->logger->debug("Response: " , $respond);
         return $this->respondWithData($respond);
     }
 
