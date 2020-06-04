@@ -41,8 +41,8 @@ class Request
     public static function init($data) {
         $req = \Meklis\RadiusToNodeny\Radius\RadReply\Request::init($data['request']);
         $ra = [
-          'ip_address' => '',
-          'pool_name' => '',
+          'ip_address' => 'no_data',
+          'pool_name' => 'no_data',
           'lease_time_sec' => 120,
           'status' => '',
           'error' => '',
