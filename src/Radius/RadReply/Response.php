@@ -16,7 +16,7 @@ class Response
         {
             $this->ipAddress = $ip;
             $this->poolName = $poolName;
-            $this->leaseTimeSec = $leaseTimeSec;
+            $this->leaseTimeSec = (int) $leaseTimeSec;
             $this->status = $status;
             $this->error = $error;
         }
@@ -24,6 +24,9 @@ class Response
             if(!$ip && !$poolName) {
                 throw new \InvalidArgumentException("IP or PoolName is required for response");
             }
+            return new self($ip, $poolName, $leaseTimeSec, $status, $error);
+        }
+        public static function createWithoutCheck($ip = null, $poolName = null, $leaseTimeSec=120, $status = "", $error = "") {
             return new self($ip, $poolName, $leaseTimeSec, $status, $error);
         }
 
@@ -40,7 +43,7 @@ class Response
                 $resp['ip_address'] = $this->ipAddress;
             }
             if($this->leaseTimeSec) {
-                $resp['lease_time_sec'] = $this->leaseTimeSec;
+                $resp['lease_time_sec'] = (int) $this->leaseTimeSec;
             }
             if($this->error) {
                 $resp['error'] = $this->error;

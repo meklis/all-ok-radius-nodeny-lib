@@ -123,8 +123,9 @@ class Store
         return $this;
     }
     function postAuth($usrIp, $macAddr, $nasName) {
+        if(!$usrIp || !$macAddr) return false;
         $properties = "mod=dhcp;user=" . Helpers::prepareMac($macAddr) . ";nas=$nasName";
-        $this->conn->prepare("INSERT INTO auth_now SET
+        return $this->conn->prepare("INSERT INTO auth_now SET
         ip = ?,
         properties = ?,
         start = UNIX_TIMESTAMP(),

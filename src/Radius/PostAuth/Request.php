@@ -41,8 +41,8 @@ class Request
     public static function init($data) {
         $req = \Meklis\RadiusToNodeny\Radius\RadReply\Request::init($data['request']);
         $ra = [
-          'ip_address' => 'no_data',
-          'pool_name' => 'no_data',
+          'ip_address' => '',
+          'pool_name' => '',
           'lease_time_sec' => 120,
           'status' => '',
           'error' => '',
@@ -52,7 +52,7 @@ class Request
                 $ra[$k] = $data['response'][$k];
             }
         }
-        $resp = Response::create($ra['ip_address'], $ra['pool_name'], $ra['lease_time_sec'], $ra['status'], $ra['error']);
+        $resp = Response::createWithoutCheck($ra['ip_address'], $ra['pool_name'], $ra['lease_time_sec'], $ra['status'], $ra['error']);
         return new self($req, $resp);
     }
 }
