@@ -65,6 +65,7 @@ class Store
         return $data;
     }
     function updateBinding($user_id, $ip_id, $mac_id) {
+        $this->logger->notice("Update release time for user $user_id with ip-id $ip_id");
         $this->conn->prepare("
             UPDATE ip_pool SET uid = ?, `release` = UNIX_TIMESTAMP() + {$this->leaseTime}
             WHERE id = ?;
@@ -104,26 +105,26 @@ class Store
     }
 
     function findRegisteredMac($mac_address, $tag = "", $device_mac = "", $device_port = "") {
-        $arguments = [$mac_address, "%$tag%"];
+        $mac_address = Helpers::prepareMac($mac_address);
+        $device_mac = Helpers::prepareMac($device_mac);
+        $this->logger->debug("Try find MAC address in mac_uid-data0", [$mac_address, $tag, $device_mac, $device_port]);
         $query = "SELECT m.id mac_id, m.uid user_id , if(r.uid is null, 0, 1 ) real_ip 
                     FROM data0 d
                     JOIN mac_uid m on m.uid = d.uid 
                     LEFT JOIN (SELECT uid FROM users_services WHERE tags LIKE '%,realip,%') r on r.uid = m.uid 
-                    WHERE m.mac = ?  and _ip_tag like ?";
+                    WHERE m.mac = '$mac_address'  and _ip_tag like '%{$tag}%'";
         if($device_mac) {
-            $arguments[] = $device_mac;
-            $query .= " and m.device_mac = ?";
+            $query .= " and m.device_mac = '$device_mac'";
         }
-        if($device_mac) {
-            $arguments[] = $device_port;
-            $query .= " and m.device_port = ?";
+        if($device_port) {
+            $query .= " and m.device_port = '$device_port'";
         }
-        $sth = $this->conn->prepare($query . " LIMIT 1 ");
-        $sth->execute($arguments);
-        if($sth->rowCount() == 0) {
-            return null;
+        $sth = $this->conn->query($query);
+        $data = $sth->fetchAll();
+        if(count($data) == 0) {
+            return  null;
         }
-        return  $sth->fetch();
+        return  $data[0];
     }
 
     function clearOldDynamicIps($time = 3600) {
