@@ -5,29 +5,43 @@ namespace Meklis\RadiusToNodeny\Nodeny;
 
 
 use Meklis\RadiusToNodeny\Helpers;
+use Monolog\Handler\NullHandler;
+use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 
 class Store
 {
     protected $conn;
     protected $leaseTime;
+    protected $logger;
     function __construct(\PDO $conn, $leaseTime = 120)
     {
         $this->leaseTime = $leaseTime;
         $this->conn = $conn;
+        $this->logger = new Logger('null', [new NullHandler(Logger::CRITICAL)]);
+    }
+    function setLogger(LoggerInterface $logger) {
+        $this->logger = $logger;
     }
     public function getIp($mac_address, $dhcp_server_name = "", $device_mac = "", $device_port = 0) :?string {
         //Проверка полного совпадения
         $registered = $this->findRegisteredIp($mac_address, $dhcp_server_name, $device_mac, $device_port, "");
         if($registered) {
+            $this->logger->debug("Registered IP found - {$registered['ip']}", ['mac'=>$mac_address,'tag'=>$dhcp_server_name,'sw_mac'=>$device_mac,'sw_port' => $device_port]);
             $this->updateBinding($registered['user_id'], $registered['ip_id'], $registered['mac_id']);
             return $registered['ip'];
         }
+        $this->logger->notice("Registered ip not found ", [$mac_address, $dhcp_server_name]);
         $macInfo = $this->findRegisteredMac($mac_address, $dhcp_server_name, $device_mac, $device_port);
         if($macInfo) {
+            $this->logger->debug("findRegisteredMac - user={$macInfo['user_id']}", [$mac_address, $dhcp_server_name]);
             $this->clearOldIpsByMac($mac_address, $dhcp_server_name);
             $ipData = $this->findFreeIp($dhcp_server_name, $macInfo['real_ip']);
+            $this->logger->debug("Found free IP address, ip={$ipData['ip']}", [$dhcp_server_name, $macInfo['real_ip']]);
             $this->updateBinding($macInfo['user_id'],$ipData['ip_id'],$macInfo['mac_id'] );
             return $ipData['ip'];
+        } else {
+            $this->logger->notice("findRegisteredMac - not found", [$mac_address, $dhcp_server_name, $device_mac, $device_port]);
         }
         return null;
     }

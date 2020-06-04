@@ -18,6 +18,8 @@ class Radius implements RadiusInterface
     protected $leaseTimeIp;
     protected $leaseTimePool;
 
+
+
     /**
      * Radius constructor.
      * @param Store $store
@@ -31,6 +33,12 @@ class Radius implements RadiusInterface
         $this->leaseTimePool = $leaseTimePool;
     }
 
+    /**
+     * @return Store
+     */
+    function getStore() {
+        return $this->store;
+    }
     /**
      * @TODO parsing of option82
      * @param Request $req

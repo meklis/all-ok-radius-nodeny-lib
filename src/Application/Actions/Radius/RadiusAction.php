@@ -13,6 +13,7 @@ abstract class RadiusAction extends Action
     protected $radius;
     function __construct(LoggerInterface $logger, RadiusInterface $radius)
     {
+        $radius->getStore()->setLogger($logger);
         $this->radius = $radius;
         parent::__construct($logger);
     }
