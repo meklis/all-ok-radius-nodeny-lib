@@ -36,10 +36,15 @@ class Store
         if($macInfo) {
             $this->logger->debug("findRegisteredMac - user={$macInfo['user_id']}", [$mac_address, $dhcp_server_name]);
             $this->clearOldIpsByMac($mac_address, $dhcp_server_name);
-            $ipData = $this->findFreeIp($dhcp_server_name, $macInfo['real_ip']);
-            $this->logger->debug("Found free IP address, ip={$ipData['ip']}", [$dhcp_server_name, $macInfo['real_ip']]);
-            $this->updateBinding($macInfo['user_id'],$ipData['ip_id'],$macInfo['mac_id'] );
-            return $ipData['ip'];
+            try {
+                $ipData = $this->findFreeIp($dhcp_server_name, $macInfo['real_ip']);
+                $this->logger->debug("Found free IP address, ip={$ipData['ip']}", [$dhcp_server_name, $macInfo['real_ip']]);
+                $this->updateBinding($macInfo['user_id'], $ipData['ip_id'], $macInfo['mac_id']);
+                return $ipData['ip'];
+            } catch (\Exception $e) {
+                $this->logger->notice("findRegisteredMac: {$e->getMessage()}", [$dhcp_server_name, $macInfo['real_ip']]);
+                return  null;
+            }
         } else {
             $this->logger->notice("findRegisteredMac - not found", [$mac_address, $dhcp_server_name, $device_mac, $device_port]);
         }
