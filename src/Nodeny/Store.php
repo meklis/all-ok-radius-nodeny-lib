@@ -5,6 +5,7 @@ namespace Meklis\RadiusToNodeny\Nodeny;
 
 
 use Meklis\RadiusToNodeny\Helpers;
+use Meklis\RadiusToNodeny\Settings;
 use Monolog\Handler\NullHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
@@ -14,10 +15,12 @@ class Store
     protected $conn;
     protected $leaseTime;
     protected $logger;
-    function __construct(\PDO $conn, $leaseTime = 120)
+    protected $settings;
+    function __construct(Settings $settings,\PDO $conn, $leaseTime = 120)
     {
         $this->leaseTime = $leaseTime;
         $this->conn = $conn;
+        $this->settings = $settings;
         $this->logger = new Logger('null', [new NullHandler(Logger::CRITICAL)]);
     }
     function setLogger(LoggerInterface $logger) {
@@ -153,5 +156,22 @@ class Store
     ON DUPLICATE KEY UPDATE
         properties = ?,
         last = UNIX_TIMESTAMP();")->execute([$usrIp, $properties, $properties]);
+    }
+    function acct($usrIp, $macAddr, $nasName, $status) {
+        if(!$usrIp || !$macAddr) return false;
+        $properties = "mod=dhcp;user=" . Helpers::prepareMac($macAddr) . ";nas=$nasName";
+        if(strtolower($status) === 'start' && $this->settings->get('radius.acct.process_start') == 'yes') {
+            return $this->conn->prepare("INSERT INTO auth_now SET
+                ip = ?,
+                properties = ?,
+                start = UNIX_TIMESTAMP(),
+                last = UNIX_TIMESTAMP()
+            ON DUPLICATE KEY UPDATE
+                properties = ?,
+                last = UNIX_TIMESTAMP();")->execute([$usrIp, $properties, $properties]);
+        } elseif (strtolower($status) === 'stop'  && $this->settings->get('radius.acct.process_stop') == 'yes') {
+            $this->conn->prepare("DELETE FROM auth_now WHERE ip = ?")->execute([$usrIp]);
+        }
+        return  false;
     }
 }

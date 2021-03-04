@@ -20,26 +20,32 @@ return function (ContainerBuilder $containerBuilder)   {
                 return  Logger::DEBUG;
         }
     };
+    $settings = [
+        'displayErrorDetails' => true, // Should be set to false in production
+        'logger' => [
+            'name' => 'slim-app',
+            'path' => isset($_ENV['DOCKER']) ? 'php://stdout' : __DIR__ . '/../logs/app.log',
+            'level' => $getLogLevel(),
+        ],
+        'radius' => [
+            'database' => [
+                'dsn' => $_ENV['DATABASE_DSN'],
+                'username' => $_ENV['DATABASE_USERNAME'],
+                'password' => $_ENV['DATABASE_PASSWORD'],
+            ],
+            'lease_timeouts' => [
+                'ip' => $_ENV['LEASETIME_IP'],
+                'pool' => $_ENV['LEASETIME_POOL'],
+            ],
+            'acct' => [
+                'process_start' => $_ENV['PROCESS_ACCT_START'],
+                'process_stop' => $_ENV['PROCESS_ACCT_STOP'],
+            ]
+        ],
+    ];
 
     $containerBuilder->addDefinitions([
-        'settings' => [
-            'displayErrorDetails' => true, // Should be set to false in production
-            'logger' => [
-                'name' => 'slim-app',
-                'path' => isset($_ENV['DOCKER']) ? 'php://stdout' : __DIR__ . '/../logs/app.log',
-                'level' => $getLogLevel(),
-            ],
-            'radius' => [
-                'database' => [
-                    'dsn' => $_ENV['DATABASE_DSN'],
-                    'username' => $_ENV['DATABASE_USERNAME'],
-                    'password' => $_ENV['DATABASE_PASSWORD'],
-                ],
-                'lease_timeouts' => [
-                    'ip' => $_ENV['LEASETIME_IP'],
-                    'pool' => $_ENV['LEASETIME_POOL'],
-                ],
-            ],
-        ],
+        'settings' => $settings,
+        \Meklis\RadiusToNodeny\Settings::class => new \Meklis\RadiusToNodeny\Settings($settings),
     ]);
 };

@@ -13,6 +13,7 @@ return function (App $app) {
     $app->group('/v1', function (Group $group) {
             $group->post('/radius-request', \Meklis\RadiusToNodeny\Application\Actions\Radius\RadReplyAction::class);
             $group->post('/radius-post-auth', \Meklis\RadiusToNodeny\Application\Actions\Radius\PostAuthAction::class);
+            $group->post('/radius-acct', \Meklis\RadiusToNodeny\Application\Actions\Radius\RadAcctAction::class);
     });
 
 };

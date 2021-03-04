@@ -5,13 +5,12 @@ namespace Meklis\RadiusToNodeny\Application\Actions\Radius;
 use Meklis\RadiusToNodeny\Radius\Auth\Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
-class RadReplyAction extends RadiusAction
+class RadAcctAction extends RadiusAction
 {
     protected function action(): Response
     {
-        $this->logger->notice("RadReply REQ: " , $this->getFormData());
-        $respond = $this->radius->radReply(Request::init($this->getFormData()))->getArray();
-        $this->logger->notice("RadReply RESP: " , $respond);
+        $this->logger->debug("Acct: " , $this->getFormData());
+        $respond = $this->radius->radAcct(\Meklis\RadiusToNodeny\Radius\Acct\Request::init($this->getFormData()));
         return $this->respondWithData($respond);
     }
 }

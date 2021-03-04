@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Meklis\RadiusToNodeny\Radius\RadReply;
+namespace Meklis\RadiusToNodeny\Radius\Auth;
 
 
 class Request

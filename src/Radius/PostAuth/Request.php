@@ -4,8 +4,8 @@
 namespace Meklis\RadiusToNodeny\Radius\PostAuth;
 
 
-use Meklis\RadiusToNodeny\Radius\RadReply\Response;
-use Meklis\RadiusToNodeny\Radius\RadReply\Request as RadReq;
+use Meklis\RadiusToNodeny\Radius\Auth\Response;
+use Meklis\RadiusToNodeny\Radius\Auth\Request as RadReq;
 
 class Request
 {
@@ -39,7 +39,7 @@ class Request
         $this->response = $response;
     }
     public static function init($data) {
-        $req = \Meklis\RadiusToNodeny\Radius\RadReply\Request::init($data['request']);
+        $req = \Meklis\RadiusToNodeny\Radius\Auth\Request::init($data['request']);
         $ra = [
           'ip_address' => '',
           'pool_name' => '',

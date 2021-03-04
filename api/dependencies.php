@@ -28,11 +28,13 @@ return function (ContainerBuilder $containerBuilder) {
         \Meklis\RadiusToNodeny\Radius\RadiusInterface::class => function(ContainerInterface $c) {
             $conf = $c->get('settings')['radius'];
             $store = new \Meklis\RadiusToNodeny\Nodeny\Store(
+                $c->get(\Meklis\RadiusToNodeny\Settings::class),
                 new PDO($conf['database']['dsn'], $conf['database']['username'], $conf['database']['password']),
                 $conf['lease_timeouts']['ip']
             );
             return new \Meklis\RadiusToNodeny\Nodeny\Radius($store, $conf['lease_timeouts']['ip'], $conf['lease_timeouts']['pool']);
-        }
+        },
+
     ]);
 
 };

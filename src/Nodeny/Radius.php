@@ -5,9 +5,10 @@ namespace Meklis\RadiusToNodeny\Nodeny;
 
 
 use Meklis\RadiusToNodeny\Radius\RadiusInterface;
-use Meklis\RadiusToNodeny\Radius\RadReply\Request;
+use Meklis\RadiusToNodeny\Radius\Acct\Request as RadAcct;
+use Meklis\RadiusToNodeny\Radius\Auth\Request;
 use \Meklis\RadiusToNodeny\Radius\PostAuth\Request as ReqPostAuth;
-use Meklis\RadiusToNodeny\Radius\RadReply\Response;
+use Meklis\RadiusToNodeny\Radius\Auth\Response;
 
 class Radius implements RadiusInterface
 {
@@ -58,7 +59,6 @@ class Radius implements RadiusInterface
     }
 
     /**
-     * @TODO Implement postauth
      * @param ReqPostAuth $req
      * @return bool
      */
@@ -67,6 +67,21 @@ class Radius implements RadiusInterface
             $req->getResponse()->getIpAddress(),
             $req->getRequest()->getDeviceMac(),
             $req->getRequest()->getNasName()
+        );
+        return true;
+    }
+
+    /**
+     * @param RadAcct $req
+     * @return bool
+     */
+    function radAcct(RadAcct $req)
+    {
+        $this->store->acct(
+          $req->getIpAddress(),
+            $req->getDeviceMac(),
+            $req->getNasName(),
+            $req->getStatusType()
         );
         return true;
     }
