@@ -145,9 +145,9 @@ class Store
             WHERE ip in (SELECT ip FROM mac_uid WHERE mac = ?) and tags like ?")->execute([$mac, "%,{$dhcpServerName},%"]);
         return $this;
     }
-    function postAuth($usrIp, $macAddr, $nasName) {
+    function postAuth($usrIp, $macAddr, $nas) {
         if(!$usrIp || !$macAddr) return false;
-        $properties = "mod=dhcp;user=" . Helpers::prepareMac($macAddr) . ";nas=$nasName";
+        $properties = "mod=dhcp;user=" . Helpers::prepareMac($macAddr) . ";nas=$nas";
         return $this->conn->prepare("INSERT INTO auth_now SET
         ip = ?,
         properties = ?,
@@ -157,9 +157,9 @@ class Store
         properties = ?,
         last = UNIX_TIMESTAMP();")->execute([$usrIp, $properties, $properties]);
     }
-    function acct($usrIp, $macAddr, $nasName, $status) {
+    function acct($usrIp, $macAddr, $nas, $status) {
         if(!$usrIp || !$macAddr) return false;
-        $properties = "mod=dhcp;user=" . Helpers::prepareMac($macAddr) . ";nas=$nasName";
+        $properties = "mod=dhcp;user=" . Helpers::prepareMac($macAddr) . ";nas=$nas";
         if(strtolower($status) === 'start' && $this->settings->get('radius.acct.process_start') == 'yes') {
             return $this->conn->prepare("INSERT INTO auth_now SET
                 ip = ?,

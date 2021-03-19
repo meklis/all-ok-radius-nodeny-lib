@@ -32,7 +32,7 @@ return function (ContainerBuilder $containerBuilder) {
                 new PDO($conf['database']['dsn'], $conf['database']['username'], $conf['database']['password']),
                 $conf['lease_timeouts']['ip']
             );
-            return new \Meklis\RadiusToNodeny\Nodeny\Radius($store, $conf['lease_timeouts']['ip'], $conf['lease_timeouts']['pool']);
+            return new \Meklis\RadiusToNodeny\Nodeny\Radius($c->get(\Meklis\RadiusToNodeny\Settings::class), $store, $conf['lease_timeouts']['ip'], $conf['lease_timeouts']['pool']);
         },
 
     ]);

@@ -40,6 +40,7 @@ return function (ContainerBuilder $containerBuilder)   {
             'acct' => [
                 'process_start' => $_ENV['PROCESS_ACCT_START'],
                 'process_stop' => $_ENV['PROCESS_ACCT_STOP'],
+                'write_nas' => isset($_ENV['WRITE_NAS']) ? $_ENV['WRITE_NAS'] : 'ip',
             ]
         ],
     ];

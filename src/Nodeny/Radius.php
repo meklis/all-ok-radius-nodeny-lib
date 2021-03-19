@@ -9,6 +9,7 @@ use Meklis\RadiusToNodeny\Radius\Acct\Request as RadAcct;
 use Meklis\RadiusToNodeny\Radius\Auth\Request;
 use \Meklis\RadiusToNodeny\Radius\PostAuth\Request as ReqPostAuth;
 use Meklis\RadiusToNodeny\Radius\Auth\Response;
+use Meklis\RadiusToNodeny\Settings;
 
 class Radius implements RadiusInterface
 {
@@ -19,17 +20,23 @@ class Radius implements RadiusInterface
     protected $leaseTimeIp;
     protected $leaseTimePool;
 
+    /**
+     * @var Settings
+     */
+    protected $settings;
 
 
     /**
      * Radius constructor.
+     * @param Settings $settings
      * @param Store $store
      * @param int $leaseTimeIp
      * @param int $leaseTimePool
      */
-    function __construct(Store $store, $leaseTimeIp = 3600, $leaseTimePool = 120)
+    function __construct(Settings $settings, Store $store, $leaseTimeIp = 3600, $leaseTimePool = 120)
     {
         $this->store = $store;
+        $this->settings = $settings;
         $this->leaseTimeIp = $leaseTimeIp;
         $this->leaseTimePool = $leaseTimePool;
     }
@@ -66,7 +73,7 @@ class Radius implements RadiusInterface
         $this->store->postAuth(
             $req->getResponse()->getIpAddress(),
             $req->getRequest()->getDeviceMac(),
-            $req->getRequest()->getNasName()
+            $this->settings->get('radius.acct.write_nas') === 'name' ? $req->getRequest()->getNasName() : $req->getRequest()->getNasIp()
         );
         return true;
     }
@@ -80,7 +87,7 @@ class Radius implements RadiusInterface
         $this->store->acct(
           $req->getIpAddress(),
             $req->getDeviceMac(),
-            $req->getNasName(),
+            $this->settings->get('radius.acct.write_nas') === 'name' ? $req->getNasName() : $req->getNasIp(),
             $req->getStatusType()
         );
         return true;
